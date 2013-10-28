@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>hdr_init</title>
+</head>
+<body>
+ HDR_INIT - initializes ANALIZE(TM) header structure.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;HDR = HDR_INIT() returns ANALIZE header structure.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;HDR = HDR_INIT(NAME1,VALUE1,NAME2,VALUE2,...) returns<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ANALYZE header initialized by given arguments.<br>
+ <br>
+&nbsp;&nbsp;&nbsp;&nbsp;EXAMPLE :<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hdr = hdr_init;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hdr = hdr_init('dim',[4 256 256 1 148 0 0 0],'datatype',8);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hdr = hdr_init('dim',[4 256 256 1 148 0 0 0],'datatype','int32');<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hdr = hdr_init('dim',[4 256 256 1 148 0 0 0],'datatype','_32BIT_SGN_INT');<br>
+ <br>
+&nbsp;&nbsp;&nbsp;&nbsp;VERSION :<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.90 01.06.05 YM&nbsp;&nbsp;first release.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.91 01.06.05 YM&nbsp;&nbsp;modified for BRU2ANZ.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.92 13.06.05 YM&nbsp;&nbsp;accepts '_16BIT_SGN_INT' and '_32BIT_SGN_INT' as 'datatype'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.93 12.09.05 YM&nbsp;&nbsp;set dime.roi_scale as 1 for safety.<br>
+ <br>
+&nbsp;&nbsp;&nbsp;&nbsp;See also HDR_READ, HDR_WRITE, DBH.H<br>
+ <br>
+&nbsp;&nbsp;ANALYZE HEADER ===================================<br>
+&nbsp;&nbsp;#pragma pack(1)<br>
+&nbsp;&nbsp;struct header_key /* header key */<br>
+&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* off + size */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;long sizeof_hdr;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;&nbsp;&nbsp;0 +&nbsp;&nbsp;4 */ <---- must be 384<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char data_type[10];&nbsp;&nbsp;/*&nbsp;&nbsp;&nbsp;&nbsp;4 + 10 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char db_name[18];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;14 + 18 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;long extents;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;32 +&nbsp;&nbsp;4 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;short session_error; /*&nbsp;&nbsp;36 +&nbsp;&nbsp;2 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char regular;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;38 +&nbsp;&nbsp;1 */ <---- should be 'r' ????<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char hkey_un0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;39 +&nbsp;&nbsp;1 */<br>
+&nbsp;&nbsp;};&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* total=40 bytes */<br>
+ <br>
+&nbsp;&nbsp;struct image_dimension<br>
+&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* off + size */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;short dim[8];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;&nbsp;&nbsp;0 + 16 */<br>
+&nbsp;&nbsp;#ifdef BRU2ANZ<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char&nbsp;&nbsp;vox_units[4];&nbsp;&nbsp;/*&nbsp;&nbsp;16 +&nbsp;&nbsp;4 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// up to 3 characters for the voxels units label; i.e. mm., um., cm.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char&nbsp;&nbsp;cal_units[8];&nbsp;&nbsp;/*&nbsp;&nbsp;20 +&nbsp;&nbsp;8 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// up to 7 characters for the calibration units label; i.e. HU<br>
+&nbsp;&nbsp;#else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;short unused8;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;16 +&nbsp;&nbsp;2 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;short unused9;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;18 +&nbsp;&nbsp;2 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;short unused10;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;20 +&nbsp;&nbsp;2 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;short unused11;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;22 +&nbsp;&nbsp;2 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;short unused12;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;24 +&nbsp;&nbsp;2 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;short unused13;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;26 +&nbsp;&nbsp;2 */<br>
+&nbsp;&nbsp;#endif<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;short unused14;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;28 +&nbsp;&nbsp;2 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;short datatype;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;30 +&nbsp;&nbsp;2 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;short bitpix;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;32 +&nbsp;&nbsp;2 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;short dim_un0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;34 +&nbsp;&nbsp;2 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float pixdim[8];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;36 + 32 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pixdim[] specifies the voxel dimensitons:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pixdim[1] - voxel width<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pixdim[2] - voxel height<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pixdim[3] - interslice distance<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...etc<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float vox_offset;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;68 +&nbsp;&nbsp;4 */<br>
+&nbsp;&nbsp;#ifdef BRU2ANZ<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float roi_scale;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;72 +&nbsp;&nbsp;4 */<br>
+&nbsp;&nbsp;#else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float funused1;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;72 +&nbsp;&nbsp;4 */<br>
+&nbsp;&nbsp;#endif<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float funused2;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;76 +&nbsp;&nbsp;4 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float funused3;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;80 +&nbsp;&nbsp;4 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float cal_max;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;84 +&nbsp;&nbsp;4 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float cal_min;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;88 +&nbsp;&nbsp;4 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float compressed;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;92 +&nbsp;&nbsp;4 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float verified;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;96 +&nbsp;&nbsp;4 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;long&nbsp;&nbsp;glmax,glmin;&nbsp;&nbsp;&nbsp;&nbsp;/* 100 +&nbsp;&nbsp;8 */<br>
+&nbsp;&nbsp;};&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* total=108 bytes */<br>
+ <br>
+&nbsp;&nbsp;struct data_history<br>
+&nbsp;&nbsp;{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* off + size */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char descrip[80];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;&nbsp;&nbsp;0 + 80 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char aux_file[24];&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;80 + 24 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char orient;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* 104 +&nbsp;&nbsp;1 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char originator[10]; /* 105 + 10 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char generated[10];&nbsp;&nbsp;/* 115 + 10 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char scannum[10];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* 125 + 10 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char patient_id[10]; /* 135 + 10 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char exp_date[10];&nbsp;&nbsp;&nbsp;&nbsp;/* 145 + 10 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char exp_time[10];&nbsp;&nbsp;&nbsp;&nbsp;/* 155 + 10 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;char hist_un0[3];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* 165 +&nbsp;&nbsp;3 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;long views;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* 168 +&nbsp;&nbsp;4 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;long vols_added;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* 172 +&nbsp;&nbsp;4 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;long start_field;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* 176 +&nbsp;&nbsp;4 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;long field_skip;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* 180 +&nbsp;&nbsp;4 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;long omax, omin;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* 184 +&nbsp;&nbsp;8 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;long smax, smin;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* 192 +&nbsp;&nbsp;8 */<br>
+&nbsp;&nbsp;};&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* total=200 bytes */<br>
+ <br>
+&nbsp;&nbsp;struct dsr<br>
+&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;struct header_key hk;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/*&nbsp;&nbsp;&nbsp;&nbsp;0 +&nbsp;&nbsp;40 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;struct image_dimension dime; /*&nbsp;&nbsp;40 + 108 */<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;struct data_history hist;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* 148 + 200 */<br>
+&nbsp;&nbsp;};&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/* total= 348 bytes */<br>
+ <br>
+&nbsp;&nbsp;typedef struct<br>
+&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float real;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;float imag;<br>
+&nbsp;&nbsp;} COMPLEX;<br>
+ <br>
+&nbsp;&nbsp;#pragma pack()<br>
+ <br>
+&nbsp;&nbsp;/* Acceptable values for datatype */<br>
+&nbsp;&nbsp;#define DT_NONE 0<br>
+&nbsp;&nbsp;#define DT_UNKNOWN 0<br>
+&nbsp;&nbsp;#define DT_BINARY 1<br>
+&nbsp;&nbsp;#define DT_UNSIGNED_CHAR 2<br>
+&nbsp;&nbsp;#define DT_SIGNED_SHORT 4<br>
+&nbsp;&nbsp;#define DT_SIGNED_INT 8<br>
+&nbsp;&nbsp;#define DT_FLOAT 16<br>
+&nbsp;&nbsp;#define DT_COMPLEX 32<br>
+&nbsp;&nbsp;#define DT_DOUBLE 64<br>
+&nbsp;&nbsp;#define DT_RGB 128<br>
+&nbsp;&nbsp;#define DT_ALL 255<br>
+ <br>
+<br>
+</body>
+</html>

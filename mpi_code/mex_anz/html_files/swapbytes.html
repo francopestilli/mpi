@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>swapbytes</title>
+</head>
+<body>
+ SWAPBYTES - swaps bytes of given data.<br>
+&nbsp;&nbsp;SV = SWAPBYTES(V) swaps bytes of V and returns the result.<br>
+&nbsp;&nbsp;SWAPBYTES(V) does the same thing but it will modify directly the original<br>
+&nbsp;&nbsp;data V without allocating additional memory for the result.<br>
+&nbsp;&nbsp;Input data V can be multi-dimesional, but its data class<br>
+&nbsp;&nbsp;must be 2bytes or 4bytes type, ie. int16/uint16/int32/uint32/single.<br>
+ <br>
+&nbsp;&nbsp;Usage: sv = swapbytes(v,[verbose=0|1])<br>
+&nbsp;&nbsp;Notes: class of 'v' must be int16,uint16,int32,uint32,single.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: if nargout==0, then swaps 'v' directly.<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;To compile,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mex swapbytes.c<br>
+ <br>
+&nbsp;&nbsp;VERSION :<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.90 2005.05.31 Yusuke MURAYAMA @MPI&nbsp;&nbsp;first release.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.91 2005.06.01 Yusuke MURAYAMA @MPI&nbsp;&nbsp;if nargout==0, swap the original.<br>
+ <br>
+&nbsp;&nbsp;See also CLASS, INT16, UINT16, INT32, UINT32, SINGLE<br>
+<br>
+</body>
+</html>
